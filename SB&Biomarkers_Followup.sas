@@ -227,12 +227,14 @@ data main3_v0_long3_1;
 	ina_30min = ina*2;
 	bedtime_30min = bedtime*2;
 	sib_awake_30min = sib_awake*2;
+	sib_bedtime_30min = sib_bedtime*2;
 	total_wear_30min = mvpa_b1_30min + lpa_b1_30min + ina_30min + bedtime_30min;
 
 	mvpa_b1_v00_30min = mvpa_b1_daily_mean_v00/30;
 	lpa_b1_v00_30min = lpa_b1_daily_mean_v00*2;
 	ina_v00_30min = ina_b1_awake_mean_v00*2;
 	bedtime_v00_30min = bed_bedtime_mean_v00*2;
+	sib_bedtime_v00_30min = sib_bedtime_mean_v00*2;
 	sib_awake_v00_30min = sib_awake_mean_v00*2;
 	total_wear_v00_30min = mvpa_b1_v00_30min + lpa_b1_v00_30min + ina_v00_30min + bedtime_v00_30min;
 	if age lt 65 then age_grp = 0;
@@ -844,3 +846,84 @@ RUN;
 proc means data = traj2 mean max;
 var ina_b1_awake_mean_v00 ina_b1_awake_mean_v66 ina_b1_awake_mean_v01;
 run;
+
+/***********************************************
+Sensitivity Analysis
+longitudinal isotemporal 
+baseline SB and biomarkers over 5 years using 
+sleep time (excluding short wake periods)
+Final Report
+***********************************************/
+
+%macro SBBio_sens(SB, biomarker);
+
+%let SBvar = &SB;
+%let bio = &biomarker;
+
+ods excel file = "C:\Users\lli256\OneDrive - Emory University\PROJECTS\PREDIMED-Plus\Sedentary behavior and Biomarkers\3_Results\Table4\SensitivityAnalysis\&SBvar&Bio..xlsx";
+/*ods excel file =  "C:\Users\Linzi\OneDrive - Emory\PROJECTS\PREDIMED-Plus\Sedentary behavior and Biomarkers\3_Results\Table4\v3\&SBvar&Bio..xlsx";*/
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') sex;
+      model &biomarker = visit age sex sib_bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min 
+						sib_bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit total_wear_v00_30min/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') sex origin smoke_s1;
+      model &biomarker = visit age sex origin BMI_v00 smoke_s1 alcoholg_v00 sib_bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min 
+						sib_bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit total_wear_v00_30min/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') sex origin smoke_s1 htnmed_v00 lipidmed_v00 diab_prev_s1 insulinas_v00;
+      model &biomarker = visit age sex origin BMI_v00 smoke_s1 alcoholg_v00 SBP_v00 DBP_v00 hdl_v00 ldl_calc_v00 
+				htnmed_v00 lipidmed_v00 diab_prev_s1 insulinas_v00 sib_bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min 
+						sib_bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit total_wear_v00_30min/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+ods excel close;
+
+***visit as continuous var***;
+ods excel file = "C:\Users\lli256\OneDrive - Emory University\PROJECTS\PREDIMED-Plus\Sedentary behavior and Biomarkers\3_Results\Table4\SensitivityAnalysis\cont_&SBvar&Bio..xlsx";
+
+proc mixed data = main3_v0_long3;
+      class id idcluster sex;
+      model &biomarker = visit age sex sib_bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min 
+						sib_bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit total_wear_v00_30min/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster sex origin smoke_s1;
+      model &biomarker = visit age sex origin BMI_v00 smoke_s1 alcoholg_v00 sib_bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min 
+						sib_bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit total_wear_v00_30min/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster sex origin smoke_s1 htnmed_v00 lipidmed_v00 diab_prev_s1 insulinas_v00;
+      model &biomarker = visit age sex origin BMI_v00 smoke_s1 alcoholg_v00 SBP_v00 DBP_v00 hdl_v00 ldl_calc_v00 
+				htnmed_v00 lipidmed_v00 diab_prev_s1 insulinas_v00 sib_bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min 
+						sib_bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit total_wear_v00_30min/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+ods excel close;
+
+%mend;
+
+%SBBio_sens(ina_30min, log_cicp);
+%SBBio_sens(ina_30min, log_tnt);
+%SBBio_sens(ina_30min, log_crp);
+%SBBio_sens(ina_30min, log_nitro);
+%SBBio_sens(ina_30min, log_bnp);

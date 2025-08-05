@@ -623,24 +623,24 @@ ods excel close;
 %let bio = &biomarker;
 
 proc glm data = main3_v0_long3_1;
-	class sex;
-	model &biomarker = age sex bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min total_wear_v00_30min 
-					bedtime_v00_30min*age lpa_b1_v00_30min*age mvpa_b1_v00_30min*age total_wear_v00_30min/ solution clparm;
+	class sex age_grp;
+	model &biomarker = age_grp sex bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min total_wear_v00_30min 
+					bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp total_wear_v00_30min/ solution clparm;
 	where visit = 0;
 run;
 
 proc glm data = main3_v0_long3_1;
-	class origin smoke_s1 sex;
-	model &biomarker = age sex origin BMI_v00 smoke_s1 alcoholg_v00 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min total_wear_v00_30min 
-					bedtime_v00_30min*age lpa_b1_v00_30min*age mvpa_b1_v00_30min*age total_wear_v00_30min/ solution clparm;
+	class origin smoke_s1 sex age_grp;
+	model &biomarker = age_grp sex origin BMI_v00 smoke_s1 alcoholg_v00 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min total_wear_v00_30min 
+					bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp total_wear_v00_30min/ solution clparm;
 	where visit = 0;
 run;
 
 proc glm data = main3_v0_long3_1;
-	class origin smoke htnmed lipidmed diab_prev_s1 insulin sex;
-	model &biomarker = age sex origin BMI smoke alcoholg_v00 SBP DBP hdl ldl_cal 
+	class origin smoke htnmed lipidmed diab_prev_s1 insulin sex age_grp;
+	model &biomarker = age_grp sex origin BMI smoke alcoholg_v00 SBP DBP hdl ldl_cal 
 				htnmed lipidmed diab_prev_s1 insulin bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min total_wear_v00_30min 
-				bedtime_v00_30min*age lpa_b1_v00_30min*age mvpa_b1_v00_30min*age total_wear_v00_30min / solution clparm;
+				bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp total_wear_v00_30min / solution clparm;
 	where visit = 0;
 run;
 
