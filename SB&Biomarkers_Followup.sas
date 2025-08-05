@@ -290,6 +290,7 @@ ods excel close;
 
 
 /*Table 4: Isotemporal substitution baseline actigtaphy and longitudinal biomarker*/
+/*Final Report*/
 %macro SBBio_long4(SB, biomarker);
 
 %let SBvar = &SB;
@@ -452,6 +453,85 @@ ods excel close;
 %SBBio_long4(ina_30min, log_bnp);
 
 
+		/*Test for interaction*/
+%macro SBBio_int4(biomarker);
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') sex intervention;
+      model &biomarker = visit age sex bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*sex lpa_b1_v00_30min*sex mvpa_b1_v00_30min*sex
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*sex lpa_b1_v00_30min*visit*sex mvpa_b1_v00_30min*visit*sex visit*sex total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') sex origin smoke_s1 intervention;
+      model &biomarker = visit age sex origin BMI_v03 smoke_s1 alcoholg_v03 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*sex lpa_b1_v00_30min*sex mvpa_b1_v00_30min*sex
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*sex lpa_b1_v00_30min*visit*sex mvpa_b1_v00_30min*visit*sex visit*sex total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') sex origin smoke_s1 htnmed_v03 lipidmed_v03 diab_prev_s1 insulinas_v03 intervention;
+      model &biomarker = visit age sex origin BMI_v03 smoke_s1 alcoholg_v03 SBP_v03 DBP_v03 hdl_v03 ldl_calc_v03 
+					htnmed_v03 lipidmed_v03 diab_prev_s1 insulinas_v03 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*sex lpa_b1_v00_30min*sex mvpa_b1_v00_30min*sex
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*sex lpa_b1_v00_30min*visit*sex mvpa_b1_v00_30min*visit*sex visit*sex total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+%mend;
+
+%SBBio_int4(log_cicp);
+%SBBio_int4(log_tnt);
+%SBBio_int4(log_crp);
+%SBBio_int4(log_nitro);
+%SBBio_int4(log_bnp);
+
+%macro SBBio_int4cont(biomarker);
+
+proc mixed data = main3_v0_long3;
+      class id idcluster sex intervention;
+      model &biomarker = visit age sex bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*sex lpa_b1_v00_30min*sex mvpa_b1_v00_30min*sex
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*sex lpa_b1_v00_30min*visit*sex mvpa_b1_v00_30min*visit*sex visit*sex total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster sex origin smoke_s1 intervention;
+      model &biomarker = visit age sex origin BMI_v03 smoke_s1 alcoholg_v03 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*sex lpa_b1_v00_30min*sex mvpa_b1_v00_30min*sex
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*sex lpa_b1_v00_30min*visit*sex mvpa_b1_v00_30min*visit*sex visit*sex total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster sex origin smoke_s1 htnmed_v03 lipidmed_v03 diab_prev_s1 insulinas_v03 intervention;
+      model &biomarker = visit age sex origin BMI_v03 smoke_s1 alcoholg_v03 SBP_v03 DBP_v03 hdl_v03 ldl_calc_v03 
+					htnmed_v03 lipidmed_v03 diab_prev_s1 insulinas_v03 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*sex lpa_b1_v00_30min*sex mvpa_b1_v00_30min*sex
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*sex lpa_b1_v00_30min*visit*sex mvpa_b1_v00_30min*visit*sex visit*sex total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+%mend;
+
+%SBBio_int4cont(log_cicp);
+%SBBio_int4cont(log_tnt);
+%SBBio_int4cont(log_crp);
+%SBBio_int4cont(log_nitro);
+%SBBio_int4cont(log_bnp);
+
+
+
 	/*Stratified by AGE*/
 %macro SBBio_long4(SB, biomarker);
 
@@ -538,6 +618,87 @@ ods excel close;
 %SBBio_long4(ina_30min, log_crp);
 %SBBio_long4(ina_30min, log_nitro);
 %SBBio_long4(ina_30min, log_bnp);
+
+		/*Test for interaction*/
+%macro SBBio_int4(biomarker);
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') age_grp sex intervention;
+      model &biomarker = visit sex age_grp bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*age_grp lpa_b1_v00_30min*visit*age_grp mvpa_b1_v00_30min*visit*age_grp visit*age_grp total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') age_grp sex origin smoke_s1 intervention;
+      model &biomarker = visit sex age_grp origin BMI_v03 smoke_s1 alcoholg_v03 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*age_grp lpa_b1_v00_30min*visit*age_grp mvpa_b1_v00_30min*visit*age_grp visit*age_grp total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster visit(ref = '0') age_grp sex origin smoke_s1 htnmed_v03 lipidmed_v03 diab_prev_s1 insulinas_v03 intervention;
+      model &biomarker = visit sex age_grp origin BMI_v03 smoke_s1 alcoholg_v03 SBP_v03 DBP_v03 hdl_v03 ldl_calc_v03 
+					htnmed_v03 lipidmed_v03 diab_prev_s1 insulinas_v03 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*age_grp lpa_b1_v00_30min*visit*age_grp mvpa_b1_v00_30min*visit*age_grp visit*age_grp total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+%mend;
+
+%SBBio_int4(log_cicp);
+%SBBio_int4(log_tnt);
+%SBBio_int4(log_crp);
+%SBBio_int4(log_nitro);
+%SBBio_int4(log_bnp);
+
+%macro SBBio_int4cont(biomarker);
+
+proc mixed data = main3_v0_long3;
+      class id idcluster age_grp sex intervention;
+      model &biomarker = visit age_grp bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*age_grp lpa_b1_v00_30min*visit*age_grp mvpa_b1_v00_30min*visit*age_grp visit*age_grp total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster age_grp sex origin smoke_s1 intervention;
+      model &biomarker = visit age_grp origin BMI_v03 smoke_s1 alcoholg_v03 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*age_grp lpa_b1_v00_30min*visit*age_grp mvpa_b1_v00_30min*visit*age_grp visit*age_grp total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+proc mixed data = main3_v0_long3;
+      class id idcluster age_grp sex origin smoke_s1 htnmed_v03 lipidmed_v03 diab_prev_s1 insulinas_v03 intervention;
+      model &biomarker = visit age_grp origin BMI_v03 smoke_s1 alcoholg_v03 SBP_v03 DBP_v03 hdl_v03 ldl_calc_v03 
+					htnmed_v03 lipidmed_v03 diab_prev_s1 insulinas_v03 bedtime_v00_30min lpa_b1_v00_30min mvpa_b1_v00_30min bedtime_v00_30min*age_grp lpa_b1_v00_30min*age_grp mvpa_b1_v00_30min*age_grp
+	  					bedtime_v00_30min*visit lpa_b1_v00_30min*visit mvpa_b1_v00_30min*visit
+						bedtime_v00_30min*visit*age_grp lpa_b1_v00_30min*visit*age_grp mvpa_b1_v00_30min*visit*age_grp visit*age_grp total_wear_v00_30min intervention/ solution cl;
+        random intercept / type = un subject = id;
+        random intercept / type = un subject = idcluster;
+run;
+
+%mend;
+
+%SBBio_int4cont(log_cicp);
+%SBBio_int4cont(log_tnt);
+%SBBio_int4cont(log_crp);
+%SBBio_int4cont(log_nitro);
+%SBBio_int4cont(log_bnp);
+
+
+
+
 
 /*****************************
 Trajectory Analysis
